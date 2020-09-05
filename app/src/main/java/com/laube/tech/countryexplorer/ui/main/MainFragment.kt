@@ -35,7 +35,7 @@ class MainFragment : Fragment() {
             layoutManager = LinearLayoutManager(context)
             adapter = countryListAdapter
         }
-        var dividerItemDecoration = DividerItemDecoration(this.context, LinearLayout.VERTICAL)
+        val dividerItemDecoration = DividerItemDecoration(this.context, LinearLayout.VERTICAL)
         //var headerDecoration = HeaderDecoration()
         country_list.addItemDecoration(dividerItemDecoration)
         refresh_text.setOnClickListener{
@@ -58,6 +58,7 @@ class MainFragment : Fragment() {
         viewModel.loadingError.observe(viewLifecycleOwner, Observer{isError ->
             isError?.let{
                 listError.visibility = if(it) View.VISIBLE else View.GONE
+                listError.text = getString(R.string.an_error_occured_while_loading_data)
             }
         })
 
