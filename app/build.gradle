@@ -49,5 +49,5 @@ dependencies {
 
     implementation "com.github.bumptech.glide:glide:$glideVersion"
     implementation 'com.github.corouteam:GlideToVectorYou:v2.0.0'
-
+    implementation 'com.github.carlonzo.stikkyheader:core:0.0.3-SNAPSHOT'
 }
