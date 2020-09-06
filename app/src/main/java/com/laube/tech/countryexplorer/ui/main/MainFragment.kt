@@ -1,17 +1,21 @@
 package com.laube.tech.countryexplorer.ui.main
 
-import androidx.lifecycle.ViewModelProviders
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.laube.tech.countryexplorer.R
 import kotlinx.android.synthetic.main.main_fragment.*
+import me.everything.android.ui.overscroll.OverScrollDecoratorHelper
+import me.everything.android.ui.overscroll.VerticalOverScrollBounceEffectDecorator
+import me.everything.android.ui.overscroll.adapters.RecyclerViewOverScrollDecorAdapter
+
 
 class MainFragment : Fragment() {
 
@@ -21,8 +25,10 @@ class MainFragment : Fragment() {
 
     private lateinit var viewModel: MainViewModel
     private val countryListAdapter = CountryListAdapter(arrayListOf())
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
         return inflater.inflate(R.layout.main_fragment, container, false)
     }
 
@@ -44,28 +50,50 @@ class MainFragment : Fragment() {
             loadingView.visibility = View.VISIBLE
             viewModel.fetchFromRemote()
         }
+
+
+
+        OverScrollDecoratorHelper.setUpStaticOverScroll(view, OverScrollDecoratorHelper.ORIENTATION_VERTICAL);
+       /* val decor = VerticalOverScrollBounceEffectDecorator(
+            RecyclerViewOverScrollDecorAdapter(
+                country_list,
+                null
+            )
+        )
+
+        decor.setOverScrollUpdateListener { decor, state, offset ->
+            val view = decor.view
+            if (offset > 0) {
+                // 'view' is currently being over-scrolled from the top.
+            } else if (offset < 0) {
+                // 'view' is currently being over-scrolled from the bottom.
+            } else {
+                // No over-scroll is in-effect.
+                // This is synonymous with having (state == STATE_IDLE).
+            }
+        }*/
         observeViewModel()
 
     }
     fun observeViewModel(){
         viewModel.currentCountries.observe(viewLifecycleOwner, Observer { countries ->
-            countries?.let{
+            countries?.let {
                 country_list.visibility = View.VISIBLE
                 countryListAdapter.updateCountryList(countries)
             }
         })
 
-        viewModel.loadingError.observe(viewLifecycleOwner, Observer{isError ->
-            isError?.let{
-                listError.visibility = if(it) View.VISIBLE else View.GONE
+        viewModel.loadingError.observe(viewLifecycleOwner, Observer { isError ->
+            isError?.let {
+                listError.visibility = if (it) View.VISIBLE else View.GONE
                 listError.text = getString(R.string.an_error_occured_while_loading_data)
             }
         })
 
         viewModel.loading.observe(viewLifecycleOwner, Observer { isLoading ->
-            isLoading?.let{
-                loadingView.visibility = if(it) View.VISIBLE else View.GONE
-                if(it){
+            isLoading?.let {
+                loadingView.visibility = if (it) View.VISIBLE else View.GONE
+                if (it) {
                     listError.visibility = View.GONE
                     country_list.visibility = View.GONE
                 }
