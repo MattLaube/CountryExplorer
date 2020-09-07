@@ -1,5 +1,6 @@
 package com.laube.tech.countryexplorer.ui.main
 
+
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -12,7 +13,8 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.laube.tech.countryexplorer.R
 import kotlinx.android.synthetic.main.main_fragment.*
-import me.everything.android.ui.overscroll.OverScrollDecoratorHelper
+import me.everything.android.ui.overscroll.IOverScrollDecor
+import me.everything.android.ui.overscroll.IOverScrollState
 import me.everything.android.ui.overscroll.VerticalOverScrollBounceEffectDecorator
 import me.everything.android.ui.overscroll.adapters.RecyclerViewOverScrollDecorAdapter
 
@@ -23,6 +25,9 @@ class MainFragment : Fragment() {
         fun newInstance() = MainFragment()
     }
 
+    var startTextSize: Float = 30f
+    var startLayoutHeight: Int = 80
+    var linearLayout = ViewGroup.LayoutParams(0, startLayoutHeight)
     private lateinit var viewModel: MainViewModel
     private val countryListAdapter = CountryListAdapter(arrayListOf())
     override fun onCreateView(
@@ -32,50 +37,59 @@ class MainFragment : Fragment() {
         return inflater.inflate(R.layout.main_fragment, container, false)
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+
+        super.onViewCreated(view, savedInstanceState)
+    }
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         viewModel = ViewModelProviders.of(this).get(MainViewModel::class.java)
         // TODO: Use the ViewModel
 
-        country_list.apply{
+        country_list.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = countryListAdapter
         }
         val dividerItemDecoration = DividerItemDecoration(this.context, LinearLayout.VERTICAL)
-        //var headerDecoration = HeaderDecoration()
         country_list.addItemDecoration(dividerItemDecoration)
-        refresh_text.setOnClickListener{
+        refresh_text.setOnClickListener {
             country_list.visibility = View.GONE
             listError.visibility = View.GONE
             loadingView.visibility = View.VISIBLE
             viewModel.fetchFromRemote()
         }
 
-
-
-        OverScrollDecoratorHelper.setUpStaticOverScroll(view, OverScrollDecoratorHelper.ORIENTATION_VERTICAL);
-       /* val decor = VerticalOverScrollBounceEffectDecorator(
+        header_text.textSize = startTextSize
+        linearLayout = header_layout.layoutParams
+        startLayoutHeight = linearLayout.height
+        val mVertOverScrollEffect: IOverScrollDecor? = VerticalOverScrollBounceEffectDecorator(
             RecyclerViewOverScrollDecorAdapter(
-                country_list,
-                null
+                country_list
             )
         )
 
-        decor.setOverScrollUpdateListener { decor, state, offset ->
-            val view = decor.view
-            if (offset > 0) {
-                // 'view' is currently being over-scrolled from the top.
-            } else if (offset < 0) {
-                // 'view' is currently being over-scrolled from the bottom.
-            } else {
-                // No over-scroll is in-effect.
-                // This is synonymous with having (state == STATE_IDLE).
+        mVertOverScrollEffect?.setOverScrollUpdateListener { decor, state, offset ->
+
+            if(state == IOverScrollState.STATE_IDLE){
+                header_text.textSize = startTextSize
+                linearLayout.height = startLayoutHeight
+
+            }else {
+                var maxSize = (startTextSize + (offset+ 1 )/ 10)
+
+                header_text.textSize = (startTextSize + (offset+ 1 )/ 10)
+                linearLayout.height = startLayoutHeight + offset.toInt()
             }
-        }*/
+            if (header_layout != null) {
+               // header_layout.layoutParams = linearLayout
+            }
+        }
+
         observeViewModel()
 
     }
-    fun observeViewModel(){
+
+    fun observeViewModel() {
         viewModel.currentCountries.observe(viewLifecycleOwner, Observer { countries ->
             countries?.let {
                 country_list.visibility = View.VISIBLE
@@ -101,4 +115,7 @@ class MainFragment : Fragment() {
         })
     }
 
+
+
 }
+

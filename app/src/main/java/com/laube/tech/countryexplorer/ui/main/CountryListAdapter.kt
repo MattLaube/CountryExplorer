@@ -10,10 +10,11 @@ import com.laube.tech.countryexplorer.util.getProgressDrawable
 import com.laube.tech.countryexplorer.util.loadImage
 import com.laube.tech.countryexplorer.util.loadSVG
 import kotlinx.android.synthetic.main.country_item.view.*
+import java.text.DecimalFormat
 
 class CountryListAdapter (val countryList: ArrayList<Country>): RecyclerView.Adapter<CountryListAdapter.CountryListViewHolder>(){
     class CountryListViewHolder(var view: View) : RecyclerView.ViewHolder(view)
-
+    val popFormat = DecimalFormat("#,###",)
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CountryListViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         val view = inflater.inflate(R.layout.country_item, parent, false)
@@ -22,7 +23,7 @@ class CountryListAdapter (val countryList: ArrayList<Country>): RecyclerView.Ada
 
     override fun onBindViewHolder(holder: CountryListViewHolder, position: Int) {
         holder.view.country_name.text = countryList[position].name
-        holder.view.population.text = countryList[position].population.toString()
+        holder.view.population.text = popFormat.format(countryList[position].population)
         holder.view.flag_image.loadSVG(countryList[position].flag )
     }
 
