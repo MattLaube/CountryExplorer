@@ -83,9 +83,7 @@ class MainFragment : Fragment() {
                 header_layout.layoutParams = linearLayout
             }
         }
-
         observeViewModel()
-
     }
 
     fun observeViewModel() {
