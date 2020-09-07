@@ -26,10 +26,12 @@ class MainFragment : Fragment() {
     }
 
     var startTextSize: Float = 30f
+    var maxTextSize: Float = 48f
     var startLayoutHeight: Int = 80
     var linearLayout = ViewGroup.LayoutParams(0, startLayoutHeight)
     private lateinit var viewModel: MainViewModel
     private val countryListAdapter = CountryListAdapter(arrayListOf())
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -37,14 +39,9 @@ class MainFragment : Fragment() {
         return inflater.inflate(R.layout.main_fragment, container, false)
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-
-        super.onViewCreated(view, savedInstanceState)
-    }
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         viewModel = ViewModelProviders.of(this).get(MainViewModel::class.java)
-        // TODO: Use the ViewModel
 
         country_list.apply {
             layoutManager = LinearLayoutManager(context)
@@ -54,8 +51,8 @@ class MainFragment : Fragment() {
         country_list.addItemDecoration(dividerItemDecoration)
         refresh_text.setOnClickListener {
             country_list.visibility = View.GONE
-            listError.visibility = View.GONE
-            loadingView.visibility = View.VISIBLE
+            list_Error.visibility = View.GONE
+            loading_View.visibility = View.VISIBLE
             viewModel.fetchFromRemote()
         }
 
@@ -68,20 +65,22 @@ class MainFragment : Fragment() {
             )
         )
 
+        // Here we use the OverScroll library to simulate the over scroll on iOS
+        // the over scroll changes the size of the header and layout
         mVertOverScrollEffect?.setOverScrollUpdateListener { decor, state, offset ->
-
             if(state == IOverScrollState.STATE_IDLE){
                 header_text.textSize = startTextSize
                 linearLayout.height = startLayoutHeight
-
             }else {
-                var maxSize = (startTextSize + (offset+ 1 )/ 10)
-
-                header_text.textSize = (startTextSize + (offset+ 1 )/ 10)
+                var textSize = (startTextSize + (offset+ 1 )/ 10)
+                if (textSize > maxTextSize){
+                    textSize = maxTextSize
+                }
+                header_text.textSize = textSize
                 linearLayout.height = startLayoutHeight + offset.toInt()
             }
             if (header_layout != null) {
-               // header_layout.layoutParams = linearLayout
+                header_layout.layoutParams = linearLayout
             }
         }
 
@@ -99,22 +98,21 @@ class MainFragment : Fragment() {
 
         viewModel.loadingError.observe(viewLifecycleOwner, Observer { isError ->
             isError?.let {
-                listError.visibility = if (it) View.VISIBLE else View.GONE
-                listError.text = getString(R.string.an_error_occured_while_loading_data)
+                list_Error.visibility = if (it) View.VISIBLE else View.GONE
+                list_Error.text = getString(R.string.an_error_occured_while_loading_data)
             }
         })
 
         viewModel.loading.observe(viewLifecycleOwner, Observer { isLoading ->
             isLoading?.let {
-                loadingView.visibility = if (it) View.VISIBLE else View.GONE
+                loading_View.visibility = if (it) View.VISIBLE else View.GONE
                 if (it) {
-                    listError.visibility = View.GONE
+                    list_Error.visibility = View.GONE
                     country_list.visibility = View.GONE
                 }
             }
         })
     }
-
 
 
 }
