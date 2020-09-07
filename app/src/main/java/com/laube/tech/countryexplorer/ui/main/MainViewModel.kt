@@ -16,31 +16,31 @@ class MainViewModel : ViewModel() {
     val loading = MutableLiveData<Boolean>()
     private val disposable = CompositeDisposable()
 
-     fun fetchFromRemote() {
+    fun fetchFromRemote() {
         loading.value = true
         disposable.add(
-                countryListAPIService.getCountries()
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribeWith(object : DisposableSingleObserver<List<Country>>() {
-                            override fun onSuccess(countryList: List<Country>)
-                            {
-                                currentCountries.value = countryList
-                                loadingError.value = false
-                                loading.value = false
-                            }
+            countryListAPIService.getCountries()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(object : DisposableSingleObserver<List<Country>>() {
+                    override fun onSuccess(countryList: List<Country>) {
+                        currentCountries.value = countryList
+                        loadingError.value = false
+                        loading.value = false
+                    }
 
-                            override fun onError(e: Throwable) {
-                                loadingError.value = true
-                                loading.value = false
-                                e.printStackTrace()
-                            }
+                    override fun onError(e: Throwable) {
+                        loadingError.value = true
+                        loading.value = false
+                        e.printStackTrace()
+                    }
 
-                        }
-                        ))
+                }
+                ))
     }
 
     override fun onCleared() {
+        disposable.clear()
         super.onCleared()
     }
 

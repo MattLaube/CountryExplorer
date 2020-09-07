@@ -45,9 +45,10 @@ dependencies {
     implementation "com.squareup.retrofit2:converter-gson:$retrofitVersion"
     implementation "com.squareup.retrofit2:adapter-rxjava2:$retrofitVersion"
 
-    implementation  "io.reactivex.rxjava2:rxandroid:2.1.1"
+    implementation 'io.reactivex.rxjava2:rxandroid:2.1.1'
 
     implementation "com.github.bumptech.glide:glide:$glideVersion"
     implementation 'com.github.corouteam:GlideToVectorYou:v2.0.0'
+    implementation 'me.everything:overscroll-decor-android:1.1.0'
 
 }
