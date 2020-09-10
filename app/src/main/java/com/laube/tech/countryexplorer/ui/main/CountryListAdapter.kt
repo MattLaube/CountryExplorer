@@ -10,19 +10,25 @@ import com.laube.tech.countryexplorer.util.loadSVG
 import kotlinx.android.synthetic.main.country_item.view.*
 import java.text.DecimalFormat
 
-class CountryListAdapter (val countryList: ArrayList<Country>): RecyclerView.Adapter<CountryListAdapter.CountryListViewHolder>(){
+class CountryListAdapter(val countryList: ArrayList<Country>): RecyclerView.Adapter<CountryListAdapter.CountryListViewHolder>(){
     class CountryListViewHolder(var view: View) : RecyclerView.ViewHolder(view)
-    private val popFormat = DecimalFormat("#,###",)
+    var TYPE_HEADER = 0
+    var TYPE_ITEM = 1
+
+    private val popFormat = DecimalFormat("#,###")
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CountryListViewHolder {
         val inflater = LayoutInflater.from(parent.context)
-        val view = inflater.inflate(R.layout.country_item, parent, false)
+        val viewId = if(viewType == TYPE_HEADER ) R.layout.country_header else R.layout.country_item
+        val view = inflater.inflate(viewId, parent, false)
         return CountryListViewHolder(view)
     }
 
     override fun onBindViewHolder(holder: CountryListViewHolder, position: Int) {
-        holder.view.country_name.text = countryList[position].name
-        holder.view.population_text.text = popFormat.format(countryList[position].population)
-        holder.view.flag_image.loadSVG(countryList[position].flag )
+        if (position != 0) {
+            holder.view.country_name.text = countryList[position].name
+            holder.view.population_text.text = popFormat.format(countryList[position].population)
+            holder.view.flag_image.loadSVG(countryList[position].flag)
+        }
     }
 
     override fun getItemCount(): Int {
@@ -34,4 +40,12 @@ class CountryListAdapter (val countryList: ArrayList<Country>): RecyclerView.Ada
         countryList.addAll(newCountry)
         notifyDataSetChanged()
     }
+
+    override fun getItemViewType(position: Int): Int {
+        if (position == 0) {
+            return TYPE_HEADER
+        }
+        return TYPE_ITEM
+    }
+
 }

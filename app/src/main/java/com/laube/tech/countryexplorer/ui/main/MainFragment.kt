@@ -25,10 +25,7 @@ class MainFragment : Fragment() {
         fun newInstance() = MainFragment()
     }
 
-    var startTextSize: Float = 30f
-    var maxTextSize: Float = 48f
-    var startLayoutHeight: Int = 80
-    var linearLayout = ViewGroup.LayoutParams(0, startLayoutHeight)
+
     private lateinit var viewModel: MainViewModel
     private val countryListAdapter = CountryListAdapter(arrayListOf())
 
@@ -56,9 +53,7 @@ class MainFragment : Fragment() {
             viewModel.fetchFromRemote()
         }
 
-        header_text.textSize = startTextSize
-        linearLayout = header_layout.layoutParams
-        startLayoutHeight = linearLayout.height
+
         val mVertOverScrollEffect: IOverScrollDecor? = VerticalOverScrollBounceEffectDecorator(
             RecyclerViewOverScrollDecorAdapter(
                 country_list
@@ -69,19 +64,11 @@ class MainFragment : Fragment() {
         // the over scroll changes the size of the header and layout
         mVertOverScrollEffect?.setOverScrollUpdateListener { decor, state, offset ->
             if(state == IOverScrollState.STATE_IDLE){
-                header_text.textSize = startTextSize
-                linearLayout.height = startLayoutHeight
+
             }else {
-                var textSize = (startTextSize + (offset+ 1 )/ 10)
-                if (textSize > maxTextSize){
-                    textSize = maxTextSize
-                }
-                header_text.textSize = textSize
-                linearLayout.height = startLayoutHeight + offset.toInt()
+
             }
-            if (header_layout != null) {
-                header_layout.layoutParams = linearLayout
-            }
+
         }
         observeViewModel()
     }
